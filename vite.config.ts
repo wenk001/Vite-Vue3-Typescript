@@ -11,6 +11,14 @@ export default defineConfig({
       "@": path.resolve(__dirname, "src")
     },
   },
+  css:{
+    preprocessorOptions:{
+      less:{
+        chatset: false,
+        additionalData: '@import "@/assets/style/global.less";'
+      }
+    }
+  },
   server: {
     https: false,
     open: true,

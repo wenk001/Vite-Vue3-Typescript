@@ -10,6 +10,7 @@ const collapsed = ref(false)
   <div class="layout">
     <n-layout has-sider>
       <n-layout-sider  
+        bordered
         collapse-mode="width"
         :collapsed-width="0"
         :width="240"
@@ -21,7 +22,7 @@ const collapsed = ref(false)
         <Menu/>
       </n-layout-sider>
     <n-layout>
-      <n-layout-header>
+      <n-layout-header bordered>
         <Head/>
       </n-layout-header>
       <n-layout-content :native-scrollbar="false">
@@ -43,7 +44,6 @@ const collapsed = ref(false)
   }
   .n-layout-content {
     height: calc(100vh - 50px);
-    background: rgba(40, 24, 180, 0.4);
   }
 }
 </style>

@@ -104,7 +104,7 @@ const expandIcon = () => {
     <n-menu
       accordion
       :collapsed="collapsed"
-      :collapsed-width="64"
+      :collapsed-width="0"
       :collapsed-icon-size="22"
       :options="menuOptions"
       :render-label="renderMenuLabel"

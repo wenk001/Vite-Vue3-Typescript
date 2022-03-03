@@ -1,38 +1,128 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { h, ref, defineProps  } from 'vue'
+import { RouterLink } from 'vue-router'
+import { NIcon } from 'naive-ui'
+import type { MenuOption } from 'naive-ui'
+import { Balloon, CaretDownOutline } from '@vicons/ionicons5'
 
+const props = defineProps({
+  collapsed: Boolean
+})
+
+const menuOptions: MenuOption[] = [
+  {
+    label: '且听风吟',
+    key: 'hear-the-wind-sing',
+    href: 'https://baike.baidu.com/item/%E4%B8%94%E5%90%AC%E9%A3%8E%E5%90%9F/3199'
+  },
+  {
+    label: '1973年的弹珠玩具',
+    key: 'pinball-1973',
+    children: [
+      {
+        label: '鼠',
+        key: 'rat'
+      }
+    ]
+  },
+  {
+    label: '寻羊冒险记',
+    key: 'a-wild-sheep-chase',
+  },
+  {
+    label: '舞，舞，舞',
+    key: 'dance-dance-dance',
+    children: [
+      {
+        type: 'group',
+        label: '人物',
+        key: 'people',
+        children: [
+          {
+            label: '叙事者',
+            key: 'narrator'
+          },
+          {
+            label: '羊男',
+            key: 'sheep-man'
+          }
+        ]
+      },
+      {
+        label: '饮品',
+        key: 'beverage',
+        children: [
+          {
+            label: '威士忌',
+            key: 'whisky',
+            href: 'https://baike.baidu.com/item/%E5%A8%81%E5%A3%AB%E5%BF%8C%E9%85%92/2959816?fromtitle=%E5%A8%81%E5%A3%AB%E5%BF%8C&fromid=573&fr=aladdin'
+          }
+        ]
+      },
+      {
+        label: '食物',
+        key: 'food',
+        children: [
+          {
+            label: '三明治',
+            key: 'sandwich'
+          }
+        ]
+      },
+      {
+        label: '过去增多，未来减少',
+        key: 'the-past-increases-the-future-recedes'
+      }
+    ]
+  }
+]
+const renderMenuLabel = (option: MenuOption) => {
+        if ('href' in option) {
+          return h(
+            RouterLink,
+            { to: { name: 'Home' } },
+            { default: () => option.label as string }
+          )
+        }
+        return option.label as string
+      }
+const renderMenuIcon = (option: MenuOption) => {
+        // 渲染图标占位符以保持缩进
+        if (option.key === 'sheep-man') return true
+        // 返回 falsy 值，不再渲染图标及占位符
+        if (option.key === 'food') return null
+        return h(NIcon, null, { default: () => h(Balloon) })
+      }
+const expandIcon = () => {
+        return h(NIcon, null, { default: () => h(CaretDownOutline) })
+      }
 </script>
 
 <template>
-  <div class="layout">
-    <n-layout has-sider>
-      <n-layout-sider bordered>
-        海淀桥
-      </n-layout-sider>
-    <n-layout>
-      <n-layout-header bordered>颐和园路</n-layout-header>
-      <n-layout-content bordered>
-        <router-view></router-view>
-      </n-layout-content>
-    </n-layout>
-  </n-layout>
+  <div class="menu">
+    <div class="logo">磅旗科技</div>
+    <n-menu
+      accordion
+      :collapsed="collapsed"
+      :collapsed-width="64"
+      :collapsed-icon-size="22"
+      :options="menuOptions"
+      :render-label="renderMenuLabel"
+      :render-icon="renderMenuIcon"
+      :expand-icon="expandIcon"
+    />
   </div>
 </template>
 
 <style scoped lang="less">
-.layout{
-  .n-layout-header{
+.menu{
+  .logo{
     height: 50px;
-    background: rgba(228, 210, 52, 0.2);
-  }
-  .n-layout-sider {
-    height: 100vh;
-    background: rgba(27, 175, 106, 0.3);
-  }
-  .n-layout-content {
-    height: calc(100vh - 50px);
-    background: rgba(40, 24, 180, 0.4);
+    text-align: center;
+    line-height: 50px;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: bold;
   }
 }
 </style>

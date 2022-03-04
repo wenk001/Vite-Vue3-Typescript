@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { h, ref, defineProps, onMounted } from 'vue'
+import { h, ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { NIcon } from 'naive-ui'
 import { Balloon, CaretDownOutline, BicycleSharp, Barbell, BarChart, Body, BriefcaseSharp, BowlingBall, Boat, Beer } from '@vicons/ionicons5'

@@ -27,7 +27,12 @@ const x = ref(0)
 const y = ref(0)
 const handleSelect = (key: any) => {
   showDropdownRef.value = false
-  Del()
+  if(key === 'delete'){
+    Del()
+  }
+  if(key === 'edit'){
+    Update()
+  }
 }
 const onClickoutside = () => {
   showDropdownRef.value = false
@@ -126,22 +131,27 @@ const Del = async () => {
     loadData()
   }
 }
-const addPar = reactive({
+const modelPar: any = reactive({
   id: '',
   showModal: false,
   title: ''
 })
 const Add = () => {
-  addPar.id =''
-  addPar.showModal = true
-  addPar.title = '添加'
+  modelPar.id =''
+  modelPar.showModal = true
+  modelPar.title = '添加'
+}
+const Update = () => {
+  modelPar.id = activeV.value
+  modelPar.showModal = true
+  modelPar.title = '编辑'
 }
 const close = (type: any) => {
-  console.log('132132')
   if(type === 1){
     loadData()
   }
-  addPar.showModal = false
+  modelPar.showModal = false
+  modelPar.id = ''
 }
 </script>
 
@@ -206,7 +216,7 @@ const close = (type: any) => {
           />
         </div>
 </div>
-<Save v-if="addPar.showModal" @close="close" :title="addPar.title" :showModal="addPar.showModal" :id="addPar.id"/>
+<Save v-if="modelPar.showModal" @close="close" :title="modelPar.title" :showModal="modelPar.showModal" :id="modelPar.id"/>
 </template>
 
 <style scoped lang="less">

@@ -99,7 +99,7 @@ onMounted(()=>{
                 <n-form-item label="姓名" path="name">
                     <n-input v-model:value="formValue.name" placeholder="输入姓名" />
                 </n-form-item>
-                <n-form-item label="年龄" path="user.age">
+                <n-form-item label="年龄" path="age">
                     <n-input v-model:value="formValue.age" placeholder="输入年龄" />
                 </n-form-item>
                 <n-form-item label="电话号码" path="phone">

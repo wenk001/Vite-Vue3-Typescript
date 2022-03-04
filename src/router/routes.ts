@@ -14,7 +14,14 @@ const home = [
     name: 'Home'
   }
 ]
-
+// AGV管理
+const taskApplication = [
+  {
+    path: '/taskApplication',
+    component: () => import('@/views/taskApplication/TaskApplication.vue'),
+    name: 'TaskApplication'
+  }
+]
 const routes: any = [
   ...login,
   {
@@ -23,7 +30,7 @@ const routes: any = [
     name:'Layout',
     redirect: '/home',
     children: [
-      ...home
+      ...home, ...taskApplication
     ],
   }
 ]

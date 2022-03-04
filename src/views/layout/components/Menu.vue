@@ -1,101 +1,68 @@
 <script setup lang="ts">
-import { h, ref, defineProps  } from 'vue'
+import { h, ref, defineProps, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { NIcon } from 'naive-ui'
-import type { MenuOption } from 'naive-ui'
-import { Balloon, CaretDownOutline } from '@vicons/ionicons5'
+import { Balloon, CaretDownOutline, BicycleSharp, Barbell, BarChart, Body, BriefcaseSharp, BowlingBall, Boat, Beer } from '@vicons/ionicons5'
+import { asideIndex } from '@/api/layout/layout'
 
+
+const iconList: any = {
+  'Balloon': Balloon,
+  'BicycleSharp': BicycleSharp,
+  'Barbell': Barbell,
+  'BarChart': BarChart,
+  'Body': Body,
+  'BriefcaseSharp': BriefcaseSharp,
+  'BowlingBall': BowlingBall,
+  'Boat': Boat,
+  'Beer': Beer
+}
 const props = defineProps({
   collapsed: Boolean
 })
 
-const menuOptions: MenuOption[] = [
-  {
-    label: '且听风吟',
-    key: 'hear-the-wind-sing',
-    href: 'https://baike.baidu.com/item/%E4%B8%94%E5%90%AC%E9%A3%8E%E5%90%9F/3199'
-  },
-  {
-    label: '1973年的弹珠玩具',
-    key: 'pinball-1973',
-    children: [
-      {
-        label: '鼠',
-        key: 'rat'
-      }
-    ]
-  },
-  {
-    label: '寻羊冒险记',
-    key: 'a-wild-sheep-chase',
-  },
-  {
-    label: '舞，舞，舞',
-    key: 'dance-dance-dance',
-    children: [
-      {
-        type: 'group',
-        label: '人物',
-        key: 'people',
-        children: [
-          {
-            label: '叙事者',
-            key: 'narrator'
-          },
-          {
-            label: '羊男',
-            key: 'sheep-man'
-          }
-        ]
-      },
-      {
-        label: '饮品',
-        key: 'beverage',
-        children: [
-          {
-            label: '威士忌',
-            key: 'whisky',
-            href: 'https://baike.baidu.com/item/%E5%A8%81%E5%A3%AB%E5%BF%8C%E9%85%92/2959816?fromtitle=%E5%A8%81%E5%A3%AB%E5%BF%8C&fromid=573&fr=aladdin'
-          }
-        ]
-      },
-      {
-        label: '食物',
-        key: 'food',
-        children: [
-          {
-            label: '三明治',
-            key: 'sandwich'
-          }
-        ]
-      },
-      {
-        label: '过去增多，未来减少',
-        key: 'the-past-increases-the-future-recedes'
-      }
-    ]
+const menuOptions: any = ref([])
+const renderMenuLabel = (option: any) => {
+  if (option.object.url) {
+    return h(
+      RouterLink,
+      { to: { path: option.object.url } },
+      { default: () => option.text as string }
+    )
   }
-]
-const renderMenuLabel = (option: MenuOption) => {
-        if ('href' in option) {
-          return h(
-            RouterLink,
-            { to: { name: 'Home' } },
-            { default: () => option.label as string }
-          )
-        }
-        return option.label as string
-      }
-const renderMenuIcon = (option: MenuOption) => {
-        // 渲染图标占位符以保持缩进
-        if (option.key === 'sheep-man') return true
-        // 返回 falsy 值，不再渲染图标及占位符
-        if (option.key === 'food') return null
-        return h(NIcon, null, { default: () => h(Balloon) })
-      }
-const expandIcon = () => {
-        return h(NIcon, null, { default: () => h(CaretDownOutline) })
-      }
+  return option.text as string
+}
+const renderIcon = (icon: any) => {
+  if(iconList[icon]){
+    return () => h(NIcon, null, { default: () => h(iconList[icon]) })
+  }
+  return true
+}
+const expandIcon = (option: any) => {
+  if(option.children.length > 0){
+    return h(NIcon, null, { default: () => h(CaretDownOutline) })
+  }
+  return null
+}
+const deepObject = (obj: any) => {
+  obj.forEach((v: any) => {
+    v.icon = renderIcon(v.icon)
+    if(v.children.length > 0){
+      deepObject(v.children)
+    }
+  })
+}
+const AsideIndex = async () => {
+  let { data } = await asideIndex({})
+  if(data.code === 200){
+    deepObject(data.data.functionList)
+    menuOptions.value = data.data.functionList
+  }
+  console.log(menuOptions.value)
+}
+onMounted(() => {
+  AsideIndex()
+})      
 </script>
 
 <template>
@@ -103,12 +70,14 @@ const expandIcon = () => {
     <div class="logo">磅旗科技</div>
     <n-menu
       accordion
+      children-field="children"
+      key-field="id"
+      label-field="text"
       :collapsed="collapsed"
       :collapsed-width="0"
       :collapsed-icon-size="22"
       :options="menuOptions"
       :render-label="renderMenuLabel"
-      :render-icon="renderMenuIcon"
       :expand-icon="expandIcon"
     />
   </div>

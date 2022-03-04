@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { CashOutline as CashIcon } from '@vicons/ionicons5'
 import { login } from '@/api/login/login'
-import { setToken } from '@/utils/cookie';
+import { setToken, setUserName } from '@/utils/cookie';
 import {
   FormInst,
   FormRules
@@ -37,6 +37,7 @@ const Login = async () => {
   if(data.code === 200){
     (window as any).$message.success('登录成功')
     setToken(data.data[0])  
+    setUserName(data.data[1])
     router.push('/')
   }
   loadingRef.value = false

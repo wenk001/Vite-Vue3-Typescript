@@ -10,7 +10,6 @@ const collapsed = ref(false)
   <div class="layout">
     <n-layout has-sider>
       <n-layout-sider  
-        bordered
         collapse-mode="width"
         :collapsed-width="0"
         :width="240"
@@ -37,6 +36,7 @@ const collapsed = ref(false)
 .layout{
   .n-layout-header{
     height: 50px;
+    background: rgba(9, 150, 84, 0.301);
   }
   .n-layout-sider {
     height: 100vh;

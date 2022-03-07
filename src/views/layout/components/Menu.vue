@@ -36,7 +36,7 @@ const renderIcon = (icon: any) => {
   if(iconList[icon]){
     return () => h(NIcon, null, { default: () => h(iconList[icon]) })
   }
-  return true
+  return () => { return true }
 }
 const expandIcon = (option: any) => {
   if(option.children.length > 0){

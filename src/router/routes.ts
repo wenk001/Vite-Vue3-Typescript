@@ -26,7 +26,7 @@ const routes: any = [
   ...login,
   {
     path: '/',
-    component: () => import('@/views/layout/Layout.vue'),
+    component: () => import('@/views/layout/LayoutBlock.vue'),
     name:'Layout',
     redirect: '/home',
     children: [

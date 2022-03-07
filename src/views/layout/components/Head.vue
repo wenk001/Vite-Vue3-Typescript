@@ -14,7 +14,8 @@ import { useRouter } from 'vue-router'
 import {
   PersonCircleOutline as UserIcon,
   Pencil as EditIcon,
-  LogOutOutline as LogoutIcon
+  LogOutOutline as LogoutIcon,
+  ChevronDown as DownIcon
 } from '@vicons/ionicons5'
 
 
@@ -168,6 +169,9 @@ onMounted(()=>{
             </n-icon>
             </template>
             {{userName}}
+            <n-icon>
+                <down-icon />
+            </n-icon>
         </n-button>
     </n-dropdown>
   </div>

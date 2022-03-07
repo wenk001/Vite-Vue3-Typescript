@@ -1,20 +1,24 @@
 <script setup lang="ts">
 import { h, ref, reactive, nextTick, onMounted } from 'vue'
-import { FormInst, DropdownOption } from 'naive-ui'
+import { FormInst, DropdownOption, NButton} from 'naive-ui'
 import { list, del } from '@/api/taskApplication/taskApplication'
-import Save from '@/views/taskApplication/components/save.vue'
+import Save from '@/views/taskApplication/components/SaveData.vue'
+
+const name = ref('TaskApplication')
 const formRef = ref<FormInst | null>(null)
-const formValue = ref({
+const loading = ref(true)
+const formValue = reactive({
   code: '',
   brand: ''
 })
 const reset = (e: MouseEvent) => {
-  formValue.value.brand = ''
-  formValue.value.code = ''
+  formValue.brand = ''
+  formValue.code = ''
+  loadData()
 }
 const options: DropdownOption[] = [
   {
-    label: '编辑',
+    label: () => h('span', { style: { color: 'blue' } }, '编辑'),
     key: 'edit'
   },
   {
@@ -25,10 +29,22 @@ const options: DropdownOption[] = [
 const showDropdownRef = ref(false)
 const x = ref(0)
 const y = ref(0)
-const handleSelect = (key: any) => {
-  showDropdownRef.value = false
+const handleSelect = (key: any,id: any = -1) => {
+  if(id < 0){
+    showDropdownRef.value = false
+  }else{
+    activeV.value = id
+  }
   if(key === 'delete'){
-    Del()
+    (window as any).$dialog.warning({
+        title: '温馨提示',
+        content: '确定要删除吗？',
+        positiveText: '确定',
+        negativeText: '取消',
+        onPositiveClick: () => {
+          Del()
+        }
+      })
   }
   if(key === 'edit'){
     Update()
@@ -63,7 +79,7 @@ const columns = [
   },
   {
     title: '链接状态',
-    key: 'conneStatus'
+    key: 'conneStatus',
   },
   {
     title: '品牌',
@@ -88,13 +104,41 @@ const columns = [
   {
     title: '注册日期',
     key: 'registTime'
-  }
+  },
+  {
+      title: '操作',
+      key: 'actions',
+      width: 140,
+      render (row: any) {
+        return [
+          h(
+          NButton,
+          {
+            type: 'info',
+            style: 'margin-right: 12px',
+            size: 'small',
+            onClick: () => handleSelect('edit',row.id)
+          },
+          { default: () => '编辑' }
+        ),
+        h(
+          NButton,
+          {
+            type: 'error',
+            size: 'small',
+            onClick: () => handleSelect('delete',row.id)
+          },
+          { default: () => '删除' }
+        ),
+        ]
+      }
+    }
 ]
 const tableData = ref([])     
 onMounted(()=>{
   const queryFromHeight = document.getElementById('query-from')?.offsetHeight
   const bodyHeight = document.body?.offsetHeight
-  tableHeight.value = bodyHeight - (queryFromHeight as number) - 50 - 50 - 50 - 24
+  tableHeight.value = bodyHeight - (queryFromHeight as number) - 50 - 50 - 50 - 50 - 24
   loadData()
 }) 
 const pageData = reactive({
@@ -111,17 +155,18 @@ const pageSizeChange = (pageSize: any) => {
   loadData()
 }
 const loadData = async () => {
+  loading.value = true
   let par = {
     pageNum: pageData.pageNum,
     pageSize: pageData.pageSize
   }
-  Object.assign(par, formValue.value)
+  Object.assign(par, formValue)
   let { data } = await list(par)
   if(data.code === 200){
     tableData.value = data.data.records
     pageData.total = data.data.total
   }
-  
+  setTimeout(() => {loading.value = false},500)
 }
 const Del = async () => {
   let par = { id: activeV.value}
@@ -142,7 +187,7 @@ const Add = () => {
   modelPar.title = '添加'
 }
 const Update = () => {
-  modelPar.id = activeV.value
+  modelPar.id = activeV.value.toString()
   modelPar.showModal = true
   modelPar.title = '编辑'
 }
@@ -187,6 +232,8 @@ const close = (type: any) => {
             ref="table"
             :columns="columns"
             :data="tableData"
+            :loading="loading"
+            :single-line="false"
             :row-props="rowProps"
             :max-height="tableHeight"
         />
@@ -198,7 +245,7 @@ const close = (type: any) => {
             :options="options"
             :show="showDropdownRef"
             :on-clickoutside="onClickoutside"
-            @select="handleSelect"
+            @select="(key) => {handleSelect(key)}"
         />
         <div class="foot">
           <n-button type="primary" size="small" @click="Add"> 

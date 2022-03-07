@@ -11,12 +11,12 @@ export function list(params: any) {
   });
 }
 // 查单个
-export function findOn(params: any) {
+export function findOne(params: any) {
   const data = {
     ...params
   };
   return request({
-    url: '/manage/device/findOn',
+    url: '/manage/device/findOne',
     method: 'post',
     data,
   });

@@ -25,7 +25,7 @@ export default defineConfig({
     port: 3000,
     proxy:{
       '/api': {
-        target: 'http://192.168.1.51:8085',
+        target: 'http://uhrpi8.natappfree.cc',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       }

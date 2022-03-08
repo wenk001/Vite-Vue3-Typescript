@@ -1,16 +1,15 @@
 <script lang="ts">
 // 声明额外的选项
 export default {
-  name: 'taskApplication'
+  name: 'floor'
 }
 </script>
 <script setup lang="ts">
 import { h, ref, reactive, nextTick, onMounted } from 'vue'
 import { FormInst, DropdownOption, NButton} from 'naive-ui'
-import { list, del } from '@/api/taskApplication/taskApplication'
+import { list, del, delFloor } from '@/api/floor/floor'
 import Save from '@/views/taskApplication/components/SaveData.vue'
 
-const name = ref('TaskApplication')
 const formRef = ref<FormInst | null>(null)
 const loading = ref(true)
 const formValue = reactive({
@@ -76,40 +75,20 @@ const rowProps = (row: any) => {
 }
 const tableHeight: any = ref(0)    
 const columns = [
-  {
-    title: '序号',
-    key: 'index',
-    render (row: any, index: any) {
-      return h('span', null, index + 1)
-    }
-  },
-  {
-    title: '链接状态',
-    key: 'conneStatus',
-  },
-  {
-    title: '品牌',
-    key: 'brand'
-  },
-  {
-    title: '类型',
-    key: 'provider'
-  },
-  {
-    title: 'ID',
-    key: 'id'
-  },
-  {
-    title: 'IP',
-    key: 'ip'
-  },
+  // {
+  //   title: '序号',
+  //   key: 'index',
+  //   render (row: any, index: any) {
+  //     return h('span', null, index + 1)
+  //   }
+  // },
   {
     title: '名称',
-    key: 'brandName'
+    key: 'name',
   },
   {
-    title: '注册日期',
-    key: 'registTime'
+    title: '编码',
+    key: 'code'
   },
   {
       title: '操作',
@@ -166,7 +145,7 @@ const loadData = async () => {
     pageNum: pageData.pageNum,
     pageSize: pageData.pageSize
   }
-  Object.assign(par, formValue)
+  //Object.assign(par, formValue)
   let { data } = await list(par)
   if(data.code === 200){
     tableData.value = data.data.records
@@ -204,12 +183,18 @@ const close = (type: any) => {
   modelPar.showModal = false
   modelPar.id = ''
 }
+const rowKey = (row: any) => {
+  if(row.buildingId){
+    return row.buildingId + '-' + row.id
+  }
+  return row.id
+}
 </script>
 
 <template>
     <div class="component-main">
         <div id="query-from">
-            <n-form
+            <!-- <n-form
             ref="formRef"
             inline
             label-placement="left"
@@ -227,12 +212,12 @@ const close = (type: any) => {
             </n-form>
             <div class="query-sub">
                 <n-button attr-type="button" size="small" @click="reset">
-                    清空
+                  清空
                 </n-button>
                 <n-button type="primary" size="small" @click="loadData"> 
-                    查询
+                  查询
                 </n-button>
-            </div>
+            </div> -->
         </div>
         <n-data-table
             ref="table"
@@ -240,6 +225,7 @@ const close = (type: any) => {
             :data="tableData"
             :loading="loading"
             :single-line="false"
+            :row-key="rowKey"
             :row-props="rowProps"
             :max-height="tableHeight"
         />

@@ -5,7 +5,6 @@ import { NIcon } from 'naive-ui'
 import { Balloon, CaretDownOutline, BicycleSharp, Barbell, BarChart, Body, BriefcaseSharp, BowlingBall, Boat, Beer } from '@vicons/ionicons5'
 import { asideIndex } from '@/api/layout/layout'
 
-
 const iconList: any = {
   'Balloon': Balloon,
   'BicycleSharp': BicycleSharp,
@@ -26,11 +25,18 @@ const renderMenuLabel = (option: any) => {
   if (option.object.url) {
     return h(
       RouterLink,
-      { to: { path: option.object.url } },
+      { 
+        to: { path: option.object.url },
+        onClick: () => goToUrl(option.object.url,option.text)
+      },
       { default: () => option.text as string }
     )
   }
   return option.text as string
+}
+const emit = defineEmits(['addMenu'])
+const goToUrl = (url: any, name: any) => {
+  emit('addMenu',{ url, name })
 }
 const renderIcon = (icon: any) => {
   if(iconList[icon]){
@@ -58,7 +64,6 @@ const AsideIndex = async () => {
     deepObject(data.data.functionList)
     menuOptions.value = data.data.functionList
   }
-  console.log(menuOptions.value)
 }
 onMounted(() => {
   AsideIndex()

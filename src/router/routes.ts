@@ -22,6 +22,14 @@ const taskApplication = [
     name: 'TaskApplication'
   }
 ]
+// 地图管理
+const floor = [
+  {
+    path: '/floor',
+    component: () => import('@/views/floor/Floor.vue'),
+    name: 'Floor'
+  }
+]
 const routes: any = [
   ...login,
   {
@@ -30,7 +38,7 @@ const routes: any = [
     name:'Layout',
     redirect: '/home',
     children: [
-      ...home, ...taskApplication
+      ...home, ...taskApplication, ...floor
     ],
   }
 ]

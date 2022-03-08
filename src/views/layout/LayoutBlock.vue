@@ -1,22 +1,56 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { onMounted, ref, watch} from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import Menu from '@/views/layout/components/Menu.vue'
 import Head from '@/views/layout/components/Head.vue'
 const collapsed = ref(false)
-const menuRecordList = ref([
-  {
-    name: 'test1',
-    url: '/home'
-  },
-  {
-    name: 'test2',
-    url: '/'
+const router = useRouter()
+const route = useRoute()
+const activeMenu = ref('/home')
+const menuRecordList: any = ref([])
+const handleCloseMenu = (url: any) => {
+  let index = menuRecordList.value.findIndex((v: any) => { return v.url === url })
+  menuRecordList.value.splice(index, 1)
+  saveMenuList()
+  if(index > 0){
+    goToUrl(menuRecordList.value[index - 1].url)
+  }else{
+    goToUrl('/home')
   }
-])
-const handleCloseMenu = () => {
-
 }
+const goToUrl = (url: any) => {
+  activeMenu.value = url
+  router.push({path: url})
+}
+const closeAll = () => {
+  menuRecordList.value = []
+  saveMenuList()
+  goToUrl('/home')
+}
+const addMenu = (par: any) => {
+  if(menuRecordList.value.findIndex((v: any) => { return v.url === par.url }) === -1){
+    menuRecordList.value.push(par)
+    saveMenuList()
+  }
+  activeMenu.value = par.url
+}
+const menuList = ref(['home'])
+const saveMenuList = () => {
+  let par: any = []
+  menuRecordList.value.forEach((v: any) => {
+    par.push(v.url.split('/')[1])
+  })
+  menuList.value = ['home', ...par]
+  sessionStorage.setItem('menuRecordList', JSON.stringify(menuRecordList.value))
+}
+onMounted(() => {
+  if(sessionStorage.getItem('menuRecordList')){
+    let par = JSON.parse((sessionStorage.getItem('menuRecordList') as any))
+    menuRecordList.value = par
+    activeMenu.value = route.path
+    saveMenuList()
+  }
+})
 </script>
 
 <template>
@@ -31,7 +65,7 @@ const handleCloseMenu = () => {
         @expand="collapsed = false"
         show-trigger="bar" 
         :native-scrollbar="false">
-        <Menu/>
+        <Menu @addMenu="addMenu"/>
       </n-layout-sider>
     <n-layout>
       <n-layout-header>
@@ -39,21 +73,23 @@ const handleCloseMenu = () => {
       </n-layout-header>
       <n-layout-content :native-scrollbar="false">
         <div class="menuRecord">
-          <n-tabs type="card" closable @close="handleCloseMenu">
-            <template #prefix>
-              <n-button text @click="">首页</n-button>
-            </template>
-            <n-tab v-for="(i,k) in menuRecordList" :key="k" :name="i.name">
+          <n-tabs type="card" closable :value="activeMenu" @close="handleCloseMenu" @update:value="goToUrl">
+            <n-tab :closable="false" name="/home">
+              首页
+            </n-tab>
+            <n-tab v-for="(i,k) in menuRecordList" :key="k" :name="i.url">
               {{i.name}}
             </n-tab>
             <template #suffix>
-              <n-button text>关闭全部</n-button>
+              <n-button v-if="menuRecordList.length > 0" text @click="closeAll">关闭全部</n-button>
             </template>
           </n-tabs>
         </div>
-        <keep-alive include="TaskApplication">
-          <router-view ></router-view>
-        </keep-alive>
+        <router-view v-slot="{ Component }">
+          <keep-alive :include="menuList">
+            <component :is="Component"/>
+          </keep-alive>
+        </router-view>
       </n-layout-content>
     </n-layout>
   </n-layout>

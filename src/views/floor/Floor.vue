@@ -8,7 +8,8 @@ export default {
 import { h, ref, reactive, nextTick, onMounted } from 'vue'
 import { FormInst, DropdownOption, NButton} from 'naive-ui'
 import { list, del, delFloor } from '@/api/floor/floor'
-import Save from '@/views/taskApplication/components/SaveData.vue'
+import SaveDataB from '@/views/taskApplication/components/SaveDataB.vue'
+import SaveDataF from '@/views/taskApplication/components/SaveDataF.vue'
 
 const formRef = ref<FormInst | null>(null)
 const loading = ref(true)
@@ -34,11 +35,12 @@ const options: DropdownOption[] = [
 const showDropdownRef = ref(false)
 const x = ref(0)
 const y = ref(0)
-const handleSelect = (key: any,id: any = -1) => {
+const handleSelect = (key: any,id: any = -1, type: any = null) => {
   if(id < 0){
     showDropdownRef.value = false
   }else{
     activeV.value = id
+    activeT.value = type
   }
   if(key === 'delete'){
     (window as any).$dialog.warning({
@@ -59,6 +61,7 @@ const onClickoutside = () => {
   showDropdownRef.value = false
 }
 const activeV = ref(-1)
+const activeT = ref('')
 const rowProps = (row: any) => {
   return {
     onContextmenu: (e: MouseEvent) => {
@@ -66,6 +69,7 @@ const rowProps = (row: any) => {
       showDropdownRef.value = false
       nextTick().then(() => {
         activeV.value = row.id
+        activeT.value = row.type
         showDropdownRef.value = true
         x.value = e.clientX
         y.value = e.clientY
@@ -102,7 +106,7 @@ const columns = [
             type: 'info',
             style: 'margin-right: 12px',
             size: 'small',
-            onClick: () => handleSelect('edit',row.id)
+            onClick: () => handleSelect('edit', row.id, row.type)
           },
           { default: () => '编辑' }
         ),
@@ -111,7 +115,7 @@ const columns = [
           {
             type: 'error',
             size: 'small',
-            onClick: () => handleSelect('delete',row.id)
+            onClick: () => handleSelect('delete', row.id, row.type)
           },
           { default: () => '删除' }
         ),
@@ -155,33 +159,63 @@ const loadData = async () => {
 }
 const Del = async () => {
   let par = { id: activeV.value}
-  let { data } = await del(par)
-  if(data.code === 200){
-    (window as any).$message.success('删除成功！')
-    loadData()
+  if(activeT.value === 'building'){
+    let { data } = await del(par)
+    if(data.code === 200){
+      (window as any).$message.success('删除成功！')
+      loadData()
+    }
+  }
+  if(activeT.value === 'floor'){
+    let { data } = await delFloor(par)
+    if(data.code === 200){
+      (window as any).$message.success('删除成功！')
+      loadData()
+    }
   }
 }
-const modelPar: any = reactive({
+const modelParB: any = reactive({
   id: '',
   showModal: false,
   title: ''
 })
-const Add = () => {
-  modelPar.id =''
-  modelPar.showModal = true
-  modelPar.title = '添加'
+const modelParF: any = reactive({
+  id: '',
+  showModal: false,
+  title: ''
+})
+const AddB = () => {
+  console.log(activeT.value)
+  modelParB.id = ''
+  modelParB.showModal = true
+  modelParB.title = '添加楼栋'
+}
+const AddF = () => {
+  console.log(activeT.value)
+  modelParF.id = ''
+  modelParF.showModal = true
+  modelParF.title = '添加楼层'
 }
 const Update = () => {
-  modelPar.id = activeV.value.toString()
-  modelPar.showModal = true
-  modelPar.title = '编辑'
+  if(activeT.value === 'building'){
+    modelParB.id = activeV.value.toString()
+    modelParB.showModal = true
+    modelParB.title = '编辑楼栋'
+  }
+  if(activeT.value === 'floor'){
+    modelParF.id = activeV.value.toString()
+    modelParF.showModal = true
+    modelParF.title = '编辑楼层'
+  }
 }
 const close = (type: any) => {
   if(type === 1){
     loadData()
   }
-  modelPar.showModal = false
-  modelPar.id = ''
+  modelParB.showModal = false
+  modelParB.id = ''
+  modelParF.showModal = false
+  modelParF.id = ''
 }
 const rowKey = (row: any) => {
   if(row.buildingId){
@@ -240,9 +274,14 @@ const rowKey = (row: any) => {
             @select="(key) => {handleSelect(key)}"
         />
         <div class="foot">
-          <n-button type="primary" size="small" @click="Add"> 
-            添加
-          </n-button>
+          <div>
+            <n-button style="margin-right: 24px;" type="primary" size="small" @click="AddB"> 
+              添加楼栋
+            </n-button>
+            <n-button type="primary" size="small" @click="AddF"> 
+              添加楼层
+            </n-button>
+          </div>
           <n-pagination
             v-if="pageData.total > 0"
             v-model:page="pageData.pageNum"
@@ -255,7 +294,8 @@ const rowKey = (row: any) => {
           />
         </div>
 </div>
-<Save v-if="modelPar.showModal" @close="close" :title="modelPar.title" :showModal="modelPar.showModal" :id="modelPar.id"/>
+<SaveDataB v-if="modelParB.showModal" @close="close" :title="modelParB.title" :showModal="modelParB.showModal" :id="modelParB.id"/>
+<SaveDataF v-if="modelParF.showModal" @close="close" :title="modelParF.title" :showModal="modelParF.showModal" :id="modelParF.id"/>
 </template>
 
 <style scoped lang="less">

@@ -8,7 +8,7 @@ export default {
 import { h, ref, reactive, nextTick, onMounted } from 'vue'
 import { FormInst, DropdownOption, NButton} from 'naive-ui'
 import { list, del } from '@/api/taskApplication/taskApplication'
-import Save from '@/views/taskApplication/components/SaveData.vue'
+import SaveData from '@/views/taskApplication/components/SaveData.vue'
 
 const name = ref('TaskApplication')
 const formRef = ref<FormInst | null>(null)
@@ -269,7 +269,7 @@ const close = (type: any) => {
           />
         </div>
 </div>
-<Save v-if="modelPar.showModal" @close="close" :title="modelPar.title" :showModal="modelPar.showModal" :id="modelPar.id"/>
+<SaveData v-if="modelPar.showModal" @close="close" :title="modelPar.title" :showModal="modelPar.showModal" :id="modelPar.id"/>
 </template>
 
 <style scoped lang="less">

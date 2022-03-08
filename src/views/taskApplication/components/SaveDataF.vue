@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {  ref, reactive, onMounted  } from 'vue'
 import { FormInst, FormRules } from 'naive-ui'
-import { add, update, findOne } from '@/api/taskApplication/taskApplication'
+import { addFloor, updateFloor, findOneFloor } from '@/api/floor/floor'
 
 const props = defineProps({
   showModal: Boolean,
@@ -11,93 +11,85 @@ const props = defineProps({
 const showModal = ref(props.showModal)
 const formRef = ref<FormInst | null>(null)
 const model: any = reactive({
-  ip: '', // ip
-  brand: '', // 设备品牌
-  charge: '', // 电量
-  code: '', // 设备编码
-  conneStatus: '', // 连接状态
-  floorId: '', // 楼层ID
-  model: '', //模式
-  positiQuality: '', //质量
-  provider: '', // 类型
-  status: '', //状态
-  useStatus: '' // 可用状态
+  buildingId: '', // 楼栋ID
+  code: '', // 楼层编码
+  image1: '', // 图片
+  intro: '', // 简介
+  mapCode: '', // 地图编码
+  mapFile: '', // 地图文件
+  mapZoom: '', // 地图缩放
+  name: '', // 楼层名称
+  opStatus: '', // 状态
+  themeFile: '' // 主题文件
 })
 const rules: FormRules = {
-  ip: [
+  buildingId: [
     {
       required: true,
       message: '请输入ip',
       trigger: ['input', 'blur']
     }
   ],
-  brand: [
+  code: [
     {
       required: true,
       message: '请输入品牌',
       trigger: ['input', 'blur']
     }
   ],
-  provider: [
+  image1: [
     {
       required: true,
       message: '请输入类型',
       trigger: ['input', 'blur']
     }
   ],
-  charge: [
+  intro: [
     {
       required: true,
       message: '请输入电量',
       trigger: ['input', 'blur']
     }
   ],
-  code: [
+  mapCode: [
     {
       required: true,
       message: '请输入设备编码',
       trigger: ['input', 'blur']
     }
   ],
-  conneStatus: [
+  mapFile: [
     {
       required: true,
       message: '请输入连接状态',
       trigger: ['input', 'blur']
     }
   ],
-  floorId: [
+  mapZoom: [
     {
       required: true,
       message: '请输入楼层ID',
       trigger: ['input', 'blur']
     }
   ],
-  model: [
+  name: [
     {
       required: true,
       message: '请输入模式',
       trigger: ['input', 'blur']
     }
   ],
-  positiQuality: [
+  opStatus: [
     {
       required: true,
       message: '请输入质量',
       trigger: ['input', 'blur']
     }
   ],
-  status: [
+  themeFile: [
     {
       required: true,
       message: '请输入状态',
-      trigger: ['input', 'blur']
-    }
-  ],
-  useStatus: [
-    {
-      required: true,
-      message: '请输入可用状态',
       trigger: ['input', 'blur']
     }
   ],
@@ -116,13 +108,13 @@ const onSubmit = (e: MouseEvent) => {
   })
 }
 const FindOne = async (id: any) => {
-  let { data } = await findOne({id: id})
+  let { data } = await findOneFloor({id: id})
   if(data.code === 200){
     Object.assign(model,data.data)
   }
 }
 const Add = async (par: any) => {
-  let { data } = await add(par)
+  let { data } = await addFloor(par)
   if(data.code === 200){
     (window as any).$message.success('添加成功！')
     showModal.value = false
@@ -130,7 +122,7 @@ const Add = async (par: any) => {
   }
 }
 const Update = async (par: any) => {
-  let { data } = await update(par)
+  let { data } = await updateFloor(par)
   if(data.code === 200){
     (window as any).$message.success('修改成功！')
     showModal.value = false
@@ -158,59 +150,54 @@ const close = (type: any) => {
           </div>
         </template>
         <n-form ref="formRef" inline style="flex-wrap: wrap;justify-content: space-between;"  label-placement="left" :label-width="80" :model="model" :rules="rules">
-          <n-form-item path="ip" label="IP">
+          <n-form-item path="buildingId" label="楼栋ID">
             <n-input
-              v-model:value="model.ip"
+              v-model:value="model.buildingId"
             />
           </n-form-item>
-          <n-form-item path="brand" label="品牌">
-            <n-input
-              v-model:value="model.brand"
-            />
-          </n-form-item>
-          <n-form-item path="charge" label="电量">
-            <n-input
-              v-model:value="model.charge"
-            />
-          </n-form-item>
-          <n-form-item path="code" label="设备编码">
+          <n-form-item path="code" label="楼层编码">
             <n-input
               v-model:value="model.code"
             />
           </n-form-item>
-          <n-form-item path="conneStatus" label="连接状态">
+          <n-form-item path="image1" label="图片">
             <n-input
-              v-model:value="model.conneStatus"
+              v-model:value="model.image1"
             />
           </n-form-item>
-          <n-form-item path="floorId" label="楼层ID">
+          <n-form-item path="intro" label="简介">
             <n-input
-              v-model:value="model.floorId"
+              v-model:value="model.intro"
             />
           </n-form-item>
-          <n-form-item path="model" label="模式">
+          <n-form-item path="mapCode" label="地图编码">
             <n-input
-              v-model:value="model.model"
+              v-model:value="model.mapCode"
             />
           </n-form-item>
-          <n-form-item path="positiQuality" label="质量">
+          <n-form-item path="mapFile" label="地图文件">
             <n-input
-              v-model:value="model.positiQuality"
+              v-model:value="model.mapFile"
             />
           </n-form-item>
-          <n-form-item path="provider" label="类型">
+          <n-form-item path="mapZoom" label="地图缩放">
             <n-input
-              v-model:value="model.provider"
+              v-model:value="model.mapZoom"
             />
           </n-form-item>
-          <n-form-item path="status" label="状态">
+          <n-form-item path="name" label="楼层名称">
             <n-input
-              v-model:value="model.status"
+              v-model:value="model.name"
             />
           </n-form-item>
-          <n-form-item path="useStatus" label="可用状态">
+          <n-form-item path="opStatus" label="状态">
             <n-input
-              v-model:value="model.useStatus"
+              v-model:value="model.opStatus"
+            />
+          </n-form-item>
+          <n-form-item path="themeFile" label="主题文件">
+            <n-input
+              v-model:value="model.themeFile"
             />
           </n-form-item>
         </n-form>
